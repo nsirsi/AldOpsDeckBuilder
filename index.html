@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alderaan Operatives: LightSpeed Deck Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="datapad">
+      <header class="datapad__header">
+        <p class="datapad__eyebrow">Alderaan Operatives</p>
+        <h1 class="datapad__title">LightSpeed Deck Builder</h1>
+        <p class="datapad__subtitle">
+          Load public deck files from Google Drive, merge selections, and download a combined Lightspeed deck.
+        </p>
+      </header>
+
+      <section class="panel" aria-labelledby="folder-heading">
+        <h2 id="folder-heading" class="panel__heading">Drive folder</h2>
+        <p class="panel__hint">
+          Paste a public Google Drive folder link (event decks folder). Example:
+          <a
+            href="https://drive.google.com/drive/folders/1uXD4SxCRVFQFkZ4XIATEZAblbWCT1jb2"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Magic of the Force Hyperdrive</a
+          >.
+        </p>
+        <form id="folder-form" class="folder-form">
+          <label class="sr-only" for="folder-input">Google Drive folder URL or ID</label>
+          <input
+            id="folder-input"
+            class="folder-form__input"
+            type="text"
+            name="folder"
+            placeholder="https://drive.google.com/drive/folders/…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="submit" class="btn btn--primary" id="load-btn">Load decks</button>
+        </form>
+      </section>
+
+      <section class="panel panel--decks" aria-labelledby="decks-heading" hidden id="decks-panel">
+        <div class="panel__toolbar">
+          <h2 id="decks-heading" class="panel__heading">Deck files</h2>
+          <span class="panel__count" id="deck-count"></span>
+        </div>
+        <p class="panel__hint">Select two or more decks in merge order (top to bottom).</p>
+        <ul id="deck-list" class="deck-list"></ul>
+        <div class="actions">
+          <button type="button" class="btn btn--secondary" id="select-all-btn">Select all</button>
+          <button type="button" class="btn btn--secondary" id="clear-btn">Clear</button>
+          <button type="button" class="btn btn--accent" id="merge-btn" disabled>Merge &amp; download</button>
+        </div>
+      </section>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

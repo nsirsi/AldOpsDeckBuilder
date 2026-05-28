@@ -1,0 +1,18 @@
+{
+  "name": "alderaan-operatives-lightspeed-deck-builder",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:netlify": "netlify dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:merge": "node scripts/test-merge.mjs"
+  },
+  "devDependencies": {
+    "@xmldom/xmldom": "^0.9.8",
+    "netlify-cli": "^23.0.0",
+    "vite": "^6.2.0"
+  }
+}

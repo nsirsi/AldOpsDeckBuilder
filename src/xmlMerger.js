@@ -19,14 +19,31 @@ export function countDeckCards(xml) {
   return deck.getElementsByTagName('card').length;
 }
 
+/** @typedef {'open' | '40' | '60'} DeckFormat */
+
+/**
+ * @param {DeckFormat} format
+ * @returns {{ validate: boolean, allowedCounts?: number[] }}
+ */
+export function resolveDeckFormat(format) {
+  if (format === 'open') {
+    return { validate: false };
+  }
+  const count = Number(format);
+  return { validate: true, allowedCounts: [count] };
+}
+
 /**
  * @param {number} cardCount
+ * @param {number[]} [allowedCounts]
  */
-export function validateMergedCardCount(cardCount) {
-  if (!MERGED_DECK_CARD_COUNTS.includes(cardCount)) {
-    throw new Error(
-      `Merged deck must contain exactly ${MERGED_DECK_CARD_COUNTS.join(' or ')} cards (found ${cardCount}).`,
-    );
+export function validateMergedCardCount(cardCount, allowedCounts = MERGED_DECK_CARD_COUNTS) {
+  if (!allowedCounts.includes(cardCount)) {
+    const label =
+      allowedCounts.length === 1
+        ? String(allowedCounts[0])
+        : allowedCounts.join(' or ');
+    throw new Error(`Merged deck must contain exactly ${label} cards (found ${cardCount}).`);
   }
 }
 
@@ -34,11 +51,12 @@ export function validateMergedCardCount(cardCount) {
  * Merge multiple deck XML documents into one deck file.
  * Cards are concatenated in the order of the input strings.
  * @param {string[]} xmlStrings
- * @param {{ validate?: boolean }} [options]
+ * @param {{ format?: DeckFormat }} [options]
  * @returns {string}
  */
 export function mergeDecks(xmlStrings, options = {}) {
-  const { validate = true } = options;
+  const { format = 'open' } = options;
+  const { validate, allowedCounts } = resolveDeckFormat(format);
   if (!xmlStrings.length) {
     throw new Error('Select at least one deck to merge');
   }
@@ -68,8 +86,8 @@ export function mergeDecks(xmlStrings, options = {}) {
     }
   }
 
-  if (validate) {
-    validateMergedCardCount(cards.length);
+  if (validate && allowedCounts) {
+    validateMergedCardCount(cards.length, allowedCounts);
   }
 
   const lines = [XML_DECLARATION, '<deck>'];

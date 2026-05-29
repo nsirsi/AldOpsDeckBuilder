@@ -8,7 +8,9 @@ const API_BASE = '/api';
 const folderForm = document.getElementById('folder-form');
 const folderInput = document.getElementById('folder-input');
 const loadBtn = document.getElementById('load-btn');
+const deckOptions = document.getElementById('deck-options');
 const sideFilter = document.getElementById('side-filter');
+const formatSelect = document.getElementById('deck-format');
 const decksPanel = document.getElementById('decks-panel');
 const deckList = document.getElementById('deck-list');
 const deckCount = document.getElementById('deck-count');
@@ -78,13 +80,13 @@ async function loadDecks() {
     }
 
     allDeckFiles = payload.files ?? [];
-    sideFilter.hidden = false;
+    deckOptions.hidden = false;
     applySideFilter();
     decksPanel.hidden = false;
   } catch (err) {
     allDeckFiles = [];
     deckFiles = [];
-    sideFilter.hidden = true;
+    deckOptions.hidden = true;
     renderDeckList();
     decksPanel.hidden = true;
     setStatus(err.message || 'Could not load folder.', 'error');
@@ -96,6 +98,15 @@ async function loadDecks() {
 function getSelectedSide() {
   const selected = sideFilter.querySelector('input[name="deck-side"]:checked');
   return /** @type {'light' | 'dark'} */ (selected?.value ?? 'light');
+}
+
+/** @returns {'open' | '40' | '60'} */
+function getSelectedFormat() {
+  const value = formatSelect.value;
+  if (value === '40' || value === '60') {
+    return value;
+  }
+  return 'open';
 }
 
 function applySideFilter() {
@@ -186,7 +197,7 @@ async function mergeAndDownload() {
       xmlStrings.push(await response.text());
     }
 
-    const merged = mergeDecks(xmlStrings);
+    const merged = mergeDecks(xmlStrings, { format: getSelectedFormat() });
     const filename = mergedFileName(selected.map((d) => d.name));
     downloadText(filename, merged);
     setStatus(`Downloaded ${filename}`, 'success');
@@ -215,6 +226,7 @@ function setLoading(isLoading) {
   sideFilter.querySelectorAll('input').forEach((input) => {
     input.disabled = isLoading;
   });
+  formatSelect.disabled = isLoading;
 }
 
 /**

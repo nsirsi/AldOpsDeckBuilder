@@ -220,3 +220,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+#Test Files
+Dark*.txt
+Light*.txt
+merged*.txt

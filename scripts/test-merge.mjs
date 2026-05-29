@@ -11,6 +11,7 @@ const {
   mergeDecks,
   mergedFileName,
   validateMergedCardCount,
+  resolveDeckFormat,
   MERGED_DECK_CARD_COUNTS,
 } = await import('../src/xmlMerger.js');
 
@@ -21,7 +22,7 @@ const expected = readFileSync(
   'utf8',
 );
 
-const merged = mergeDecks([deckA, deckB]);
+const merged = mergeDecks([deckA, deckB], { format: 'open' });
 const name = mergedFileName(['Dark MotF Bounty Hunters.txt', 'Dark MotF Crimson Dawn.txt']);
 
 if (merged !== expected) {
@@ -55,6 +56,23 @@ for (const invalid of [30, 70]) {
       process.exit(1);
     }
   }
+}
+
+mergeDecks([deckA, deckB], { format: '60' });
+try {
+  mergeDecks([deckA, deckB], { format: '40' });
+  console.error('format 40 should reject 60-card merge.');
+  process.exit(1);
+} catch (err) {
+  if (!err.message.includes('40')) {
+    console.error('Unexpected format 40 message:', err.message);
+    process.exit(1);
+  }
+}
+
+if (resolveDeckFormat('open').validate) {
+  console.error('Open format should skip validation.');
+  process.exit(1);
 }
 
 console.log('Merge test passed.');

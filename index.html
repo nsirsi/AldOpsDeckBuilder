@@ -45,17 +45,27 @@
           />
           <button type="submit" class="btn btn--primary" id="load-btn">Load decks</button>
         </form>
-        <fieldset id="side-filter" class="side-filter" hidden>
-          <legend class="sr-only">Deck side</legend>
-          <label class="side-filter__option">
-            <input type="radio" name="deck-side" value="light" checked />
-            <span>Light Side</span>
-          </label>
-          <label class="side-filter__option">
-            <input type="radio" name="deck-side" value="dark" />
-            <span>Dark Side</span>
-          </label>
-        </fieldset>
+        <div id="deck-options" class="deck-options" hidden>
+          <fieldset id="side-filter" class="side-filter">
+            <legend class="sr-only">Deck side</legend>
+            <label class="side-filter__option">
+              <input type="radio" name="deck-side" value="light" checked />
+              <span>Light Side</span>
+            </label>
+            <label class="side-filter__option">
+              <input type="radio" name="deck-side" value="dark" />
+              <span>Dark Side</span>
+            </label>
+          </fieldset>
+          <div class="format-select">
+            <label class="format-select__label" for="deck-format">Format</label>
+            <select id="deck-format" class="format-select__control" name="deck-format">
+              <option value="open" selected>Open</option>
+              <option value="40">40</option>
+              <option value="60">60</option>
+            </select>
+          </div>
+        </div>
       </section>
 
       <section class="panel panel--decks" aria-labelledby="decks-heading" hidden id="decks-panel">

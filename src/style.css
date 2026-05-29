@@ -163,6 +163,32 @@ body {
   box-shadow: var(--glow-cyan);
 }
 
+.side-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 0.85rem 0 0;
+  padding: 0;
+  border: none;
+}
+
+.side-filter__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.side-filter__option input {
+  accent-color: var(--accent-cyan);
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
 .deck-list {
   list-style: none;
   margin: 0 0 1rem;

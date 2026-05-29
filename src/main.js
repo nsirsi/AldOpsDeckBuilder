@@ -1,3 +1,4 @@
+import { filterFilesBySide } from './deckFilter.js';
 import { parseFolderId } from './folderId.js';
 import { mergeDecks, mergedFileName } from './xmlMerger.js';
 import './style.css';
@@ -7,6 +8,7 @@ const API_BASE = '/api';
 const folderForm = document.getElementById('folder-form');
 const folderInput = document.getElementById('folder-input');
 const loadBtn = document.getElementById('load-btn');
+const sideFilter = document.getElementById('side-filter');
 const decksPanel = document.getElementById('decks-panel');
 const deckList = document.getElementById('deck-list');
 const deckCount = document.getElementById('deck-count');
@@ -14,6 +16,9 @@ const selectAllBtn = document.getElementById('select-all-btn');
 const clearBtn = document.getElementById('clear-btn');
 const mergeBtn = document.getElementById('merge-btn');
 const statusEl = document.getElementById('status');
+
+/** @type {{ id: string, name: string }[]} */
+let allDeckFiles = [];
 
 /** @type {{ id: string, name: string }[]} */
 let deckFiles = [];
@@ -48,6 +53,10 @@ mergeBtn.addEventListener('click', () => {
 
 deckList.addEventListener('change', updateMergeButton);
 
+sideFilter.addEventListener('change', () => {
+  applySideFilter();
+});
+
 async function loadDecks() {
   const folderId = parseFolderId(folderInput.value);
   if (!folderId) {
@@ -68,22 +77,42 @@ async function loadDecks() {
       throw new Error(payload.error || 'Failed to list deck files');
     }
 
-    deckFiles = payload.files ?? [];
-    renderDeckList();
+    allDeckFiles = payload.files ?? [];
+    sideFilter.hidden = false;
+    applySideFilter();
     decksPanel.hidden = false;
-
-    if (deckFiles.length === 0) {
-      setStatus('No .txt deck files found in that folder.', 'error');
-    } else {
-      setStatus(`Loaded ${deckFiles.length} deck file${deckFiles.length === 1 ? '' : 's'}.`, 'success');
-    }
   } catch (err) {
+    allDeckFiles = [];
     deckFiles = [];
+    sideFilter.hidden = true;
     renderDeckList();
     decksPanel.hidden = true;
     setStatus(err.message || 'Could not load folder.', 'error');
   } finally {
     setLoading(false);
+  }
+}
+
+function getSelectedSide() {
+  const selected = sideFilter.querySelector('input[name="deck-side"]:checked');
+  return /** @type {'light' | 'dark'} */ (selected?.value ?? 'light');
+}
+
+function applySideFilter() {
+  const side = getSelectedSide();
+  deckFiles = filterFilesBySide(allDeckFiles, side);
+  renderDeckList();
+
+  const sideLabel = side === 'light' ? 'Light' : 'Dark';
+  if (allDeckFiles.length === 0) {
+    setStatus('No .txt deck files found in that folder.', 'error');
+  } else if (deckFiles.length === 0) {
+    setStatus(`No ${sideLabel} Side deck files found in that folder.`, 'error');
+  } else {
+    setStatus(
+      `Showing ${deckFiles.length} ${sideLabel} Side deck${deckFiles.length === 1 ? '' : 's'}.`,
+      'success',
+    );
   }
 }
 
@@ -183,6 +212,9 @@ function setLoading(isLoading) {
   loadBtn.disabled = isLoading;
   mergeBtn.disabled = isLoading || getSelectedDecks().length < 2;
   folderInput.disabled = isLoading;
+  sideFilter.querySelectorAll('input').forEach((input) => {
+    input.disabled = isLoading;
+  });
 }
 
 /**

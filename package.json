@@ -8,7 +8,9 @@
     "dev:netlify": "netlify dev",
     "build": "vite build",
     "preview": "vite preview",
-    "test:merge": "node scripts/test-merge.mjs"
+    "test:merge": "node scripts/test-merge.mjs",
+    "test:filter": "node scripts/test-deck-filter.mjs",
+    "test": "npm run test:filter && npm run test:merge"
   },
   "devDependencies": {
     "@xmldom/xmldom": "^0.9.8",

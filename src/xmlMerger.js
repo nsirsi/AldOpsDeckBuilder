@@ -1,12 +1,44 @@
 const XML_DECLARATION = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
 
+export const MERGED_DECK_CARD_COUNTS = [40, 60];
+
+/**
+ * @param {string} xml
+ * @returns {number}
+ */
+export function countDeckCards(xml) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xml, 'application/xml');
+  if (doc.getElementsByTagName('parsererror').length) {
+    return 0;
+  }
+  const deck = doc.getElementsByTagName('deck')[0];
+  if (!deck) {
+    return 0;
+  }
+  return deck.getElementsByTagName('card').length;
+}
+
+/**
+ * @param {number} cardCount
+ */
+export function validateMergedCardCount(cardCount) {
+  if (!MERGED_DECK_CARD_COUNTS.includes(cardCount)) {
+    throw new Error(
+      `Merged deck must contain exactly ${MERGED_DECK_CARD_COUNTS.join(' or ')} cards (found ${cardCount}).`,
+    );
+  }
+}
+
 /**
  * Merge multiple deck XML documents into one deck file.
  * Cards are concatenated in the order of the input strings.
  * @param {string[]} xmlStrings
+ * @param {{ validate?: boolean }} [options]
  * @returns {string}
  */
-export function mergeDecks(xmlStrings) {
+export function mergeDecks(xmlStrings, options = {}) {
+  const { validate = true } = options;
   if (!xmlStrings.length) {
     throw new Error('Select at least one deck to merge');
   }
@@ -34,6 +66,10 @@ export function mergeDecks(xmlStrings) {
         title: card.getAttribute('title') ?? '',
       });
     }
+  }
+
+  if (validate) {
+    validateMergedCardCount(cards.length);
   }
 
   const lines = [XML_DECLARATION, '<deck>'];
